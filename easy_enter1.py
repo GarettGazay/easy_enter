@@ -72,11 +72,8 @@ def pickupTimes(day_code):
     # Count number of rides
     for i in pickup_sched:
         for j in i:
-            # print(j)
             pickup_count += [j]
     startNum = len(pickup_count)
-    # print("StartNum: ",startNum)
-    # print("Pickups: ",pickup_sched)
 
 def returnTimes(day_code):
     global return_sched
@@ -91,11 +88,8 @@ def returnTimes(day_code):
     # Count number of rides
     for i in return_sched:
         for j in i:
-            # print(j)
             return_count += [j]
     endNum = len(return_count)
-    # print("endNum: ",endNum)
-    # print("Returns: ",return_sched)
 
 def createCSV(fname,lname,phone,start_addy,end_addy,passNum,day_code,sertype,accID,dispnotes):
     global mwf_start
@@ -108,7 +102,7 @@ def createCSV(fname,lname,phone,start_addy,end_addy,passNum,day_code,sertype,acc
     # Total rides to be used to multiply each attribute
     total_rides = startNum + endNum
 
-    # Concat names
+    # Concat patient names
     patient_name = fname + " " + lname
 
    # Create dataframe with all data except dates
@@ -129,11 +123,6 @@ def createCSV(fname,lname,phone,start_addy,end_addy,passNum,day_code,sertype,acc
         'driver_email' : [''] * total_rides,
     })
 
-    'passengers','driver_notes','customer_notes','driver_email'
-
-    # Loop through the dates and merge dataframes
-
-
     # Pick Ups
     df_start_dates = pd.DataFrame({})
     df_start_dates1 = pd.DataFrame({})
@@ -141,13 +130,9 @@ def createCSV(fname,lname,phone,start_addy,end_addy,passNum,day_code,sertype,acc
     if day_code == "mwf":
         for i in mwf_start:
             df_start_dates = df_start_dates.append(pd.DataFrame({'pickup_date' : i}, index=[0]), ignore_index=False)
-        # print("MWF Pick up dates: ",df_start_dates)
     elif day_code == "tthsat":
         for i in tthsat_start:
-            # print("tthsat_start: ",tthsat_start)
             df_start_dates1 = df_start_dates1.append(pd.DataFrame({'pickup_date' : i}, index=[0]), ignore_index=False)
-        # print("TTHSAT Pick up dates: ",df_start_dates1)
-
 
     # Returns
     df_end_dates = pd.DataFrame({})
@@ -156,39 +141,28 @@ def createCSV(fname,lname,phone,start_addy,end_addy,passNum,day_code,sertype,acc
     if day_code == "mwf":
         for i in mwf_end:
             df_end_dates = df_end_dates.append(pd.DataFrame({'pickup_date' : i}, index=[0]), ignore_index=False)
-        # print("Return dates: ",df_end_dates)
     elif day_code == "tthsat":
         for i in tthsat_end:
             df_end_dates1 = df_end_dates1.append(pd.DataFrame({'pickup_date' : i}, index=[0]), ignore_index=False)
-        # print("TTHSAT Return dates: ",df_end_dates1)
 
 
     # Append All DataFrames
-
     allDates = df_start_dates.append(df_end_dates)
     allDates1 = df_start_dates1.append(df_end_dates1)
+    cols = 'customer_name','customer_phone','customer_email','start_address','end_address','pickup_date','return_date','account_id','service_type','passengers','driver_notes','dispatcher_notes','customer_notes','driver_email'
 
-
+    # Create final file
     if day_code == "mwf":
         concat = pd.concat([df_create,allDates])
-        concat.to_csv('scfhp-july.csv', index=False, columns = ['customer_name','customer_phone','customer_email','start_address','end_address','pickup_date','return_date','account_id','service_type','passengers','driver_notes','dispatcher_notes','customer_notes','driver_email'])
+        concat.to_csv(patient_name +' SCFHP-July 2018.csv', index=False, columns = cols)
         print("")
         print("Your MWF schedule for",patient_name, "for the Month of July has been created...")
     elif day_code == "tthsat":
         concat = pd.concat([df_create,allDates1])
-        concat.to_csv('scfhp-july.csv', index=False, columns = ['customer_name','customer_phone','customer_email','start_address','end_address','pickup_date','return_date','account_id','service_type','passengers','driver_notes','dispatcher_notes','customer_notes','driver_email'])
+        concat.to_csv(patient_name +' SCFHP-July 2018.csv', index=False, columns = cols)
         print("")
         print("Your TTHSAT schedule for",patient_name, "for the Month of July has been created...")
 
 pickupTimes(day_code)
 returnTimes(day_code)
-createCSV(patient_fname,
-                patient_lname,
-                patient_phone,
-                start_address,
-                end_address,
-                passengersNum,
-                day_code,
-                service_type,
-                account_id,
-                dispatcher_notes)
+createCSV(patient_fname,patient_lname,patient_phone,start_address,end_address,passengersNum,day_code,service_type,account_id,dispatcher_notes)
