@@ -3,7 +3,7 @@ Easy Dashride integration tool for SCFHP dialysis patients.
 
 How to use:
 
-   Because the program is in Beta-stage, you must do the following:
+   Because the software is in beta-stage, you must do the following:
 
 1. Install Python 3.6 on your machine, since you are running OSX --> https://www.python.org/ftp/python/3.6.6/python-3.6.6-macosx10.9.pkg
 2. Once Python is installed, you must download easy_enter1.py and extract it to the Desktop.  
