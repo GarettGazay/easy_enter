@@ -47,8 +47,9 @@ sat_return = "2018-7-7 " + return_time_weekday3,"2018-7-14 " + return_time_weekd
 
 sun = "2018-7-1","2018-7-8","2018-7-15","2018-7-22","2018-7-29"
 
-mwf_start = mon_pickup + tues_pickup + wed_pickup
-mwf_end = mon_return + tues_return + wed_return
+mwf_start = mon_pickup + wed_pickup + fri_pickup
+print("mwf start: ", mwf_start)
+mwf_end = mon_return + wed_return + fri_return
 tthsat_start = tues_pickup + thurs_pickup + sat_pickup
 tthsat_end = tues_return + thurs_return + sat_return
 
@@ -75,7 +76,7 @@ def pickupTimes(day_code):
             print(j)
             pickup_count += [j]
     startNum = len(pickup_count)
-    print("Number of Pick ups: ",len(pickup_count))
+    print("StartNum: ",startNum)
     print("Pickups: ",pickup_sched)
 
 def returnTimes(day_code):
@@ -94,7 +95,7 @@ def returnTimes(day_code):
             print(j)
             return_count += [j]
     endNum = len(return_count)
-    print("Number of returns: ",len(return_count))
+    print("endNum: ",endNum)
     print("Returns: ",return_sched)
 
 def createCSV(fname,lname,phone,start_addy,end_addy,passNum,day_code,sertype,accID):
@@ -111,20 +112,51 @@ def createCSV(fname,lname,phone,start_addy,end_addy,passNum,day_code,sertype,acc
     # Concat names
     patient_name = fname + " " + lname
 
-
+   # Create dataframe with all data except dates
     df_create = pd.DataFrame({
         'customer_name' : [patient_name] * total_rides,
         'customer_phone' : [phone] * total_rides,
         'customer_email' : [''] * total_rides,
         'start_address' : [start_addy] * startNum + [end_addy] * endNum,
         'end_address' : [end_addy] * endNum + [start_addy] * startNum,
+        'pickup_date' : [''] * total_rides,
+        'return_date' : [''] * total_rides,
         'account_id': [accID] * total_rides,
         'service_type' : [sertype] * total_rides,
-
-
+        'passengers' : [passNum] * total_rides,
     })
 
-    df_create.to_csv("testcsv.csv", index=False, columns = ['customer_name','customer_phone','customer_email','start_address','end_address','service_type','account_id'])
+    df_create.to_csv("testcsv.csv", index=False, columns = ['customer_name','customer_phone','customer_email','start_address','end_address','pickup_date','return_date','account_id','service_type'])
+
+    # Loop through the dates and merge dataframes
+
+    # Pick Ups
+    df_start_dates = pd.DataFrame({})
+
+    for i in mwf_start:
+        df_start_dates = df_start_dates.append(pd.DataFrame({'pickup_date' : i}, index=[0]), ignore_index=False)
+    print("Pick up dates: ",df_start_dates)
+
+    # Returns
+    df_end_dates = pd.DataFrame({})
+
+    for i in mwf_end:
+        df_end_dates = df_end_dates.append(pd.DataFrame({'pickup_date' : i}, index=[0]), ignore_index=False)
+    print("Return dates: ",df_end_dates)
+
+    # Append All DataFrames
+
+    allDates = df_start_dates.append(df_end_dates)
+    print(allDates)
+
+    outputCSV = df_create.append(allDates)
+
+    outputCSV.to_csv('testcsv.csv')
+
+
+
+
+
 
 
 
