@@ -126,41 +126,50 @@ def createCSV(fname,lname,phone,start_addy,end_addy,passNum,day_code,sertype,acc
         'passengers' : [passNum] * total_rides,
     })
 
-    df_create.to_csv("testcsv.csv", index=False, columns = ['customer_name','customer_phone','customer_email','start_address','end_address','pickup_date','return_date','account_id','service_type'])
-
     # Loop through the dates and merge dataframes
+
 
     # Pick Ups
     df_start_dates = pd.DataFrame({})
+    df_start_dates1 = pd.DataFrame({})
 
-    for i in mwf_start:
-        df_start_dates = df_start_dates.append(pd.DataFrame({'pickup_date' : i}, index=[0]), ignore_index=False)
-    print("Pick up dates: ",df_start_dates)
+    if day_code == "mwf":
+        for i in mwf_start:
+            df_start_dates = df_start_dates.append(pd.DataFrame({'pickup_date' : i}, index=[0]), ignore_index=False)
+        print("MWF Pick up dates: ",df_start_dates)
+    elif day_code == "tthsat":
+        for i in tthsat_start:
+            print("tthsat_start: ",tthsat_start)
+            df_start_dates1 = df_start_dates1.append(pd.DataFrame({'pickup_date' : i}, index=[0]), ignore_index=False)
+        print("TTHSAT Pick up dates: ",df_start_dates1)
+
 
     # Returns
     df_end_dates = pd.DataFrame({})
+    df_end_dates1 = pd.DataFrame({})
 
-    for i in mwf_end:
-        df_end_dates = df_end_dates.append(pd.DataFrame({'pickup_date' : i}, index=[0]), ignore_index=False)
-    print("Return dates: ",df_end_dates)
+    if day_code == "mwf":
+        for i in mwf_end:
+            df_end_dates = df_end_dates.append(pd.DataFrame({'pickup_date' : i}, index=[0]), ignore_index=False)
+        print("Return dates: ",df_end_dates)
+    elif day_code == "tthsat":
+        for i in tthsat_end:
+            df_end_dates1 = df_end_dates1.append(pd.DataFrame({'pickup_date' : i}, index=[0]), ignore_index=False)
+        print("TTHSAT Return dates: ",df_end_dates1)
+
 
     # Append All DataFrames
 
     allDates = df_start_dates.append(df_end_dates)
+    allDates1 = df_start_dates1.append(df_end_dates1)
     print(allDates)
 
-    outputCSV = df_create.append(allDates)
-
-    outputCSV.to_csv('testcsv.csv')
-
-
-
-
-
-
-
-
-
+    if day_code == "mwf":
+        concat = pd.concat([df_create,allDates])
+        concat.to_csv('dates_times.csv', index=False, columns = ['customer_name','customer_phone','customer_email','start_address','end_address','pickup_date','return_date','account_id','service_type'])
+    elif day_code == "tthsat":
+        concat = pd.concat([df_create,allDates1])
+        concat.to_csv('dates_times.csv', index=False, columns = ['customer_name','customer_phone','customer_email','start_address','end_address','pickup_date','return_date','account_id','service_type'])
 
 
 pickupTimes(day_code)
